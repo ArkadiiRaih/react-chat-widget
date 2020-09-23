@@ -88,15 +88,11 @@ function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number) {
 
 export function scrollToBottom(messagesDiv: HTMLDivElement | null) {
   if (!messagesDiv) return;
+
   const screenHeight = messagesDiv.clientHeight;
   const scrollTop = messagesDiv.scrollTop;
   const scrollOffset = messagesDiv.scrollHeight - (scrollTop + screenHeight);
+  const scrollDistance = (scrollOffset < screenHeight) ? scrollOffset : (screenHeight - 20);
 
-  console.log('messagesDiv ', messagesDiv);
-  console.log('screenHeight ', screenHeight);
-  console.log('scrollTop ', scrollTop);
-  console.log('scrollOffset ', scrollOffset);
-
-  if (scrollOffset) scrollWithSlowMotion(null, scrollTop, 100);
-  // if (scrollOffset) scrollWithSlowMotion(messagesDiv, scrollTop, scrollOffset);
+  if (scrollOffset) scrollWithSlowMotion(messagesDiv, scrollTop, scrollDistance);
 }

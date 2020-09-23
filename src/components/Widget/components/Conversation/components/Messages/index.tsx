@@ -4,6 +4,7 @@ import format from 'date-fns/format';
 
 import { scrollToBottom } from '../../../../../../utils/messages';
 import { Message, Link, CustomCompMessage, GlobalState } from '../../../../../../store/types';
+import { MESSAGE_BOX_SCROLL_DURATION } from '../../../../../../constants';
 import { setBadgeCount, markAllMessagesRead } from '@actions';
 
 import Loader from './components/Loader';
@@ -13,6 +14,9 @@ type Props = {
   showTimeStamp: boolean,
   profileAvatar?: string;
 }
+
+let scrolledToBottom = true;
+let prevScrollPos = 0;
 
 function Messages({ profileAvatar, showTimeStamp }: Props) {
   const dispatch = useDispatch();
@@ -25,18 +29,35 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
 
   const messageRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    // @ts-ignore
-    scrollToBottom(messageRef.current);
+    if (scrolledToBottom) {
+      scrollToBottom(messageRef.current);
+      setTimeout(() => { scrolledToBottom = false; }, MESSAGE_BOX_SCROLL_DURATION);
+    }
+
     if (showChat && badgeCount) dispatch(markAllMessagesRead());
     else dispatch(setBadgeCount(messages.filter((message) => message.unread).length));
   }, [messages, badgeCount, showChat]);
-    
+
   const getComponentToRender = (message: Message | Link | CustomCompMessage) => {
     const ComponentToRender = message.component;
     if (message.type === 'component') {
       return <ComponentToRender {...message.props} />;
     }
     return <ComponentToRender message={message} showTimeStamp={showTimeStamp} />;
+  };
+
+  const onScroll = e => {
+    const {clientHeight, scrollHeight, scrollTop} = e.target;
+    const scrollOffset = scrollHeight - (scrollTop + clientHeight);
+
+    if (scrollTop < prevScrollPos) {
+      scrolledToBottom = false;
+    }
+    if (scrollOffset <= 10) {
+      scrolledToBottom = true;
+    }
+
+    prevScrollPos = scrollTop;
   };
 
   // TODO: Fix this function or change to move the avatar to last message from response
@@ -48,7 +69,7 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
   // }
 
   return (
-    <div id="messages" className="rcw-messages-container" ref={messageRef}>
+    <div id="messages" className="rcw-messages-container" ref={messageRef} onScroll={onScroll}>
       {messages?.map((message, index) =>
         <div className="rcw-message" key={`${index}-${format(message.timestamp, 'hh:mm')}`}>
           {profileAvatar &&
