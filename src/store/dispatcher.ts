@@ -56,6 +56,14 @@ export function setBadgeCount(count: number) {
   store.dispatch(actions.setBadgeCount(count));
 }
 
+export function getBadgeCount(): number {
+  return store.getState().messages.badgeCount;
+}
+
+export function getWindowPos(): number {
+  return store.getState().behavior.windowPos;
+}
+
 export function openFullscreenPreview(payload: ImageState) {
   store.dispatch(actions.openFullscreenPreview(payload));
 }

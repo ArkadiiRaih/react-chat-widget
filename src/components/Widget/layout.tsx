@@ -4,7 +4,8 @@ import cn from 'classnames';
 
 import { GlobalState } from 'src/store/types';
 import { AnyFunction } from 'src/utils/types';
-import { openFullscreenPreview } from '@actions';
+import { openFullscreenPreview, rememberWindowPos } from '@actions';
+import { getWindowPos } from "../../store/dispatcher";
 
 import Conversation from './components/Conversation';
 import Launcher from './components/Launcher';
@@ -70,10 +71,11 @@ function WidgetLayout({
     if(showChat) {
       messageRef.current = document.getElementById('messages') as HTMLDivElement;
     }
+
     return () => {
       messageRef.current = null;
     }
-  }, [showChat])
+  }, [showChat]);
   
   const eventHandle = evt => {
     if(evt.target && evt.target.className === 'rcw-message-img') {
@@ -86,7 +88,7 @@ function WidgetLayout({
       };
       dispatch(openFullscreenPreview(obj))
     }
-  }
+  };
 
   /**
    * Previewer needs to prevent body scroll behavior when fullScreenMode is true

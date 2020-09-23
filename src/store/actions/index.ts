@@ -95,6 +95,13 @@ export function setBadgeCount(count: number): actionsTypes.SetBadgeCount {
   }
 }
 
+export function rememberWindowPos(position: number): actionsTypes.RememberWindowPos {
+  return {
+    type: actionsTypes.REMEMBER_WINDOW_POS,
+    position
+  }
+}
+
 export function markAllMessagesRead(): actionsTypes.MarkAllMessagesRead {
   return {
     type: actionsTypes.MARK_ALL_READ

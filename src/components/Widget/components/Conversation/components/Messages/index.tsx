@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState, ElementRef, ImgHTMLAttributes, Mous
 import { useSelector, useDispatch } from 'react-redux';
 import format from 'date-fns/format';
 
-import { scrollToBottom } from '../../../../../../utils/messages';
+import { scrollToLast, scrollToPos } from '../../../../../../utils/messages';
 import { Message, Link, CustomCompMessage, GlobalState } from '../../../../../../store/types';
 import { MESSAGE_BOX_SCROLL_DURATION } from '../../../../../../constants';
-import { setBadgeCount, markAllMessagesRead } from '@actions';
+import {setBadgeCount, markAllMessagesRead, rememberWindowPos} from '@actions';
+import { getWindowPos } from "../../../../../../store/dispatcher";
 
 import Loader from './components/Loader';
 import './styles.scss';
@@ -29,14 +30,23 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
 
   const messageRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (scrolledToBottom) {
-      scrollToBottom(messageRef.current);
-      setTimeout(() => { scrolledToBottom = false; }, MESSAGE_BOX_SCROLL_DURATION);
+    if (scrolledToBottom && getWindowPos() !== 0) {
+      scrollToLast(messageRef.current);
     }
-
-    if (showChat && badgeCount) dispatch(markAllMessagesRead());
-    else dispatch(setBadgeCount(messages.filter((message) => message.unread).length));
+  }, [messages]);
+  useEffect(() => {
+    if (showChat && badgeCount) {
+      dispatch(markAllMessagesRead());
+    } else {
+      dispatch(setBadgeCount(messages.filter((message) => message.unread).length));
+    }
   }, [messages, badgeCount, showChat]);
+  useEffect(() => {
+    if (messageRef.current) {
+      scrollToPos(messageRef.current, getWindowPos());
+      dispatch(rememberWindowPos(messageRef.current.scrollHeight));
+    }
+  }, [showChat]);
 
   const getComponentToRender = (message: Message | Link | CustomCompMessage) => {
     const ComponentToRender = message.component;
@@ -53,7 +63,7 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
     if (scrollTop < prevScrollPos) {
       scrolledToBottom = false;
     }
-    if (scrollOffset <= 10) {
+    if (scrollOffset <= 20) {
       scrolledToBottom = true;
     }
 

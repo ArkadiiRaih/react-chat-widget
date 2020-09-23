@@ -64,29 +64,29 @@ function sinEaseOut(timestamp: any, begining: any, change: any, duration: any) {
 }
 
 /**
- * 
  * @param {*} target scroll target
  * @param {*} scrollStart
  * @param {*} scroll scroll distance
+ * @param {*} speed scroll speed multiplier
  */
-function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number) {
+function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number, speed?: number) {
   const raf = window?.requestAnimationFrame;
   let start = 0;
   const step = (timestamp) => {
     if (!start) {
       start = timestamp;
     }
-    let stepScroll = sinEaseOut(timestamp - start, 0, scroll, MESSAGE_BOX_SCROLL_DURATION);
+    let stepScroll = sinEaseOut(timestamp - start, 0, scroll, MESSAGE_BOX_SCROLL_DURATION*(speed || 1));
     let total = scrollStart + stepScroll;
     target.scrollTop = total;
     if (total < scrollStart + scroll) {
       raf(step);
     }
-  }
+  };
   raf(step);
 }
 
-export function scrollToBottom(messagesDiv: HTMLDivElement | null) {
+export function scrollToLast(messagesDiv: HTMLDivElement | null) {
   if (!messagesDiv) return;
 
   const screenHeight = messagesDiv.clientHeight;
@@ -95,4 +95,16 @@ export function scrollToBottom(messagesDiv: HTMLDivElement | null) {
   const scrollDistance = (scrollOffset < screenHeight) ? scrollOffset : (screenHeight - 20);
 
   if (scrollOffset) scrollWithSlowMotion(messagesDiv, scrollTop, scrollDistance);
+}
+
+export function scrollToPos(messagesDiv: HTMLDivElement | null, position: number) {
+  if (!messagesDiv) return;
+
+  const scrollTop = messagesDiv.scrollTop;
+
+  if (position === 0) {
+    scrollWithSlowMotion(messagesDiv, scrollTop, messagesDiv.scrollHeight, 2);
+  } else {
+    scrollWithSlowMotion(messagesDiv, scrollTop, position - 20, 2);
+  }
 }

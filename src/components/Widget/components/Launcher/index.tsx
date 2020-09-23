@@ -4,7 +4,7 @@ import cn from 'classnames';
 
 import Badge from './components/Badge';
 import { GlobalState } from '../../../../store/types';
-import { setBadgeCount } from '../../../../store/actions';
+import {rememberWindowPos, setBadgeCount} from '../../../../store/actions';
 
 import './style.scss';
 
@@ -27,8 +27,15 @@ function Launcher({ toggle, chatId, openLabel, closeLabel }: Props) {
 
   const toggleChat = () => {
     toggle();
-    if (!showChat) dispatch(setBadgeCount(0));
-  }
+
+    const messagesWindow = document.getElementById('messages') as HTMLDivElement;
+
+    if (!showChat) {
+      dispatch(setBadgeCount(0));
+    } else {
+      dispatch(rememberWindowPos(messagesWindow.scrollTop));
+    }
+  };
 
   return (
     <button type="button" className={cn('rcw-launcher', { 'rcw-hide-sm': showChat })} onClick={toggleChat} aria-controls={chatId}>
