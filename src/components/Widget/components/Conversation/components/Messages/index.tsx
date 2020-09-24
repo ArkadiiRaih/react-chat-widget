@@ -4,8 +4,7 @@ import format from 'date-fns/format';
 
 import { scrollToLast, scrollToPos } from '../../../../../../utils/messages';
 import { Message, Link, CustomCompMessage, GlobalState } from '../../../../../../store/types';
-import { MESSAGE_BOX_SCROLL_DURATION } from '../../../../../../constants';
-import {setBadgeCount, markAllMessagesRead, rememberWindowPos} from '@actions';
+import { setBadgeCount, markAllMessagesRead, rememberWindowPos } from '@actions';
 import { getWindowPos } from "../../../../../../store/dispatcher";
 
 import Loader from './components/Loader';
@@ -18,6 +17,7 @@ type Props = {
 
 let scrolledToBottom = true;
 let prevScrollPos = 0;
+let tmpMessagesLength = 0;
 
 function Messages({ profileAvatar, showTimeStamp }: Props) {
   const dispatch = useDispatch();
@@ -30,11 +30,18 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
 
   const messageRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (scrolledToBottom && getWindowPos() !== 0) {
-      scrollToLast(messageRef.current);
+    if (tmpMessagesLength < messages.length) {
+      console.log('useEffect [messages] ', messages);
+
+      if (scrolledToBottom && getWindowPos()) {
+        setTimeout(() => { scrollToLast(messageRef.current); }, 20)
+      }
     }
-  }, [messages]);
+    tmpMessagesLength = messages.length;
+  }, [messages.length]);
   useEffect(() => {
+    console.log('useEffect [messages, badgeCount, showChat]');
+
     if (showChat && badgeCount) {
       dispatch(markAllMessagesRead());
     } else {
@@ -42,7 +49,11 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
     }
   }, [messages, badgeCount, showChat]);
   useEffect(() => {
+    console.log('useEffect [showChat] ', showChat);
+
     if (messageRef.current) {
+      console.log('useEffect [showChat] scrollHeight ', messageRef.current.scrollHeight);
+
       scrollToPos(messageRef.current, getWindowPos());
       dispatch(rememberWindowPos(messageRef.current.scrollHeight));
     }
@@ -63,9 +74,16 @@ function Messages({ profileAvatar, showTimeStamp }: Props) {
     if (scrollTop < prevScrollPos) {
       scrolledToBottom = false;
     }
-    if (scrollOffset <= 20) {
-      scrolledToBottom = true;
-    }
+    scrolledToBottom = scrollOffset <= 20;
+
+    console.log('==================================================');
+    console.log('onScroll clientHeight ', clientHeight);
+    console.log('onScroll scrollHeight ', scrollHeight);
+    console.log('onScroll prevScrollPos ', prevScrollPos);
+    console.log('onScroll scrollTop ', scrollTop);
+    console.log('onScroll scrollOffset ', scrollOffset);
+    console.log('onScroll ___scrolledToBottom___ ', scrolledToBottom);
+    console.log('==================================================');
 
     prevScrollPos = scrollTop;
   };

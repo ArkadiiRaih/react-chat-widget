@@ -5,7 +5,6 @@ import cn from 'classnames';
 import { GlobalState } from 'src/store/types';
 import { AnyFunction } from 'src/utils/types';
 import { openFullscreenPreview, rememberWindowPos } from '@actions';
-import { getWindowPos } from "../../store/dispatcher";
 
 import Conversation from './components/Conversation';
 import Launcher from './components/Launcher';

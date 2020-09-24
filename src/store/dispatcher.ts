@@ -56,6 +56,10 @@ export function setBadgeCount(count: number) {
   store.dispatch(actions.setBadgeCount(count));
 }
 
+export function getIsScrolling() {
+  return store.getState().behavior.scrollingInProcess;
+}
+
 export function getBadgeCount(): number {
   return store.getState().messages.badgeCount;
 }

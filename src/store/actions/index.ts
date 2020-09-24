@@ -95,6 +95,13 @@ export function setBadgeCount(count: number): actionsTypes.SetBadgeCount {
   }
 }
 
+export function setIsScrolling(scrollingInProcess: boolean): actionsTypes.SetIsScrolling {
+  return {
+    type: actionsTypes.SET_IS_SCROLLING,
+    scrollingInProcess
+  }
+}
+
 export function rememberWindowPos(position: number): actionsTypes.RememberWindowPos {
   return {
     type: actionsTypes.REMEMBER_WINDOW_POS,

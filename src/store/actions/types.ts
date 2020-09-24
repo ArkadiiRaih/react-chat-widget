@@ -6,6 +6,7 @@ export const TOGGLE_CHAT = 'BEHAVIOR/TOGGLE_CHAT';
 export const TOGGLE_INPUT_DISABLED = 'BEHAVIOR/TOGGLE_INPUT_DISABLED';
 export const TOGGLE_MESSAGE_LOADER = 'BEHAVIOR/TOGGLE_MSG_LOADER';
 export const SET_BADGE_COUNT = 'BEHAVIOR/SET_BADGE_COUNT';
+export const SET_IS_SCROLLING = 'BEHAVIOR/SET_IS_SCROLLING';
 export const REMEMBER_WINDOW_POS = 'BEHAVIOR/REMEMBER_WINDOW_POS';
 export const ADD_NEW_USER_MESSAGE = 'MESSAGES/ADD_NEW_USER_MESSAGE';
 export const ADD_NEW_RESPONSE_MESSAGE = 'MESSAGES/ADD_NEW_RESPONSE_MESSAGE';
@@ -80,6 +81,11 @@ export interface SetQuickButtons {
 export interface SetBadgeCount {
   type: typeof SET_BADGE_COUNT;
   count: number;
+}
+
+export interface SetIsScrolling {
+  type: typeof SET_IS_SCROLLING;
+  scrollingInProcess: boolean;
 }
 
 export interface RememberWindowPos {
