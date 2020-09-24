@@ -62,6 +62,9 @@ export function createQuickButton(button: { label: string, value: string | numbe
 function sinEaseOut(timestamp: any, begining: any, change: any, duration: any) {
   return change * ((timestamp = timestamp / duration - 1) * timestamp * timestamp + 1) + begining;
 }
+function linear(timestamp: any, begining: any, change: any, duration: any) {
+  return change * timestamp / duration + begining;
+}
 
 /**
  * @param {*} target scroll target
@@ -71,9 +74,6 @@ function sinEaseOut(timestamp: any, begining: any, change: any, duration: any) {
  */
 let scrollingInProgress = false;
 function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number, speed?: number) {
-  console.log('scrollWithSlowMotion scroll ', scroll);
-  console.log('scrollWithSlowMotion scrollingInProgress ', scrollingInProgress);
-
   if (scrollingInProgress || !scroll) {
     return false;
   }
@@ -87,7 +87,7 @@ function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number, spe
     if (!start) {
       start = timestamp;
     }
-    let stepScroll = sinEaseOut(timestamp - start, 0, scroll, MESSAGE_BOX_SCROLL_DURATION*(speed || 1));
+    let stepScroll = linear(timestamp - start, 0, scroll, MESSAGE_BOX_SCROLL_DURATION*(speed || 1));
     let total = scrollStart + stepScroll;
     target.scrollTop = total;
     if (total < scrollStart + scroll) {
@@ -98,26 +98,16 @@ function scrollWithSlowMotion(target: any, scrollStart: any, scroll: number, spe
 }
 
 export function scrollToLast(messagesDiv: HTMLDivElement | null) {
-  console.log('scrollToLast');
-
   if (!messagesDiv) return;
 
   const { scrollHeight, clientHeight, scrollTop } = messagesDiv;
   const scrollOffset = scrollHeight - (scrollTop + clientHeight);
-  const scrollDistance = (scrollOffset < clientHeight) ? scrollOffset : clientHeight;
-
-  console.log('scrollToLast scrollHeight ', scrollHeight);
-  console.log('scrollToLast clientHeight ', clientHeight);
-  console.log('scrollToLast scrollTop ', scrollTop);
-  console.log('scrollToLast scrollOffset ', scrollOffset);
-  console.log('scrollToLast scrollDistance ', scrollDistance);
+  const scrollDistance = (scrollOffset < clientHeight) ? scrollOffset : (clientHeight - 30);
 
   if (scrollDistance) scrollWithSlowMotion(messagesDiv, scrollTop, scrollDistance);
 }
 
 export function scrollToPos(messagesDiv: HTMLDivElement | null, position: number) {
-  console.log('scrollToPos position ', position);
-
   if (!messagesDiv) return;
 
   const scrollTop = messagesDiv.scrollTop;
